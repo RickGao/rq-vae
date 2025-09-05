@@ -47,7 +47,7 @@ optimizer:
 
 
 experiment:
-  batch_size: 64
+  batch_size: 32
   epochs: 150
   save_ckpt_freq: 5
   test_freq: 1
