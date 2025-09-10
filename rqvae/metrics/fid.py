@@ -11,6 +11,7 @@ import torch.nn.functional as F
 from scipy import linalg
 from torch.utils.data import DataLoader
 from tqdm import tqdm
+from torchvision.utils import save_image, make_grid
 
 from .inception import InceptionV3
 
@@ -122,6 +123,7 @@ def compute_statistics_dataset(dataset,
                                stage1_model=None,
                                device=torch.device('cuda'),
                                skip_original=False,
+                               save_dir=None,
                                ):
 
     if skip_original and stage1_model is None:
@@ -145,7 +147,8 @@ def compute_statistics_dataset(dataset,
     sample_max = torch.tensor(float('-inf'), device=device)
     sample_min = torch.tensor(float('inf'), device=device)
 
-    for xs, _ in tqdm(loader, desc="compute acts"):
+    # for xs, _ in tqdm(loader, desc="compute acts"):
+    for idx, (xs, _) in enumerate(tqdm(loader, desc="compute acts")):
         xs = xs.to(device, non_blocking=True)
 
         # we are assuming that dataset returns value in -1 ~ 1 -> remap to 0 ~ 1
@@ -170,6 +173,8 @@ def compute_statistics_dataset(dataset,
             xs_recon = torch.clamp(xs_recon * 0.5 + 0.5, 0, 1)
             act_recon = inception_model(xs_recon).cpu()
             acts_recon.append(act_recon)
+            save_image(xs_recon, f"recon_batch_{idx}.png")
+
 
     sample_mean = sample_sum.item() / sample_size_sum
     sample_std = ((sample_sq_sum.item() / sample_size_sum) - (sample_mean ** 2.0)) ** 0.5
