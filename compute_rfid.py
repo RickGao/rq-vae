@@ -31,7 +31,7 @@ def load_model(path, ema=False):
     config.arch = augment_arch_defaults(config.arch)
 
     model, _ = create_model(config.arch, ema=False)
-    ckpt = torch.load(path)['state_dict_ema'] if ema else torch.load(path)['state_dict']
+    ckpt = torch.load(path, weights_only=False)['state_dict_ema'] if ema else torch.load(path)['state_dict']
     model.load_state_dict(ckpt)
 
     return model, config

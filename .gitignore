@@ -131,3 +131,8 @@ dmypy.json
 configs/.DS_Store
 configs/ffhq/.DS_Store
 configs/ffhq/stage1/.DS_Store
+.idea/inspectionProfiles/profiles_settings.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/rq-vae-transformer.iml
+.idea/vcs.xml
