@@ -136,3 +136,4 @@ configs/ffhq/stage1/.DS_Store
 .idea/modules.xml
 .idea/rq-vae-transformer.iml
 .idea/vcs.xml
+.idea/.name
