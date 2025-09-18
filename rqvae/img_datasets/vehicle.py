@@ -13,7 +13,7 @@ class Vehicle(Dataset):
     Vehicle Dataset for image reconstruction tasks.
     """
 
-    def __init__(self, root, split='train', transform=None):
+    def __init__(self, root, split='train', transform=None, max_samples=None):
         self.root = root
         self.split = split
         self.transform = transform
@@ -27,7 +27,12 @@ class Vehicle(Dataset):
         if len(self.files) == 0:
             raise RuntimeError(f'No images found in {split_dir}')
 
-        print(f'Found {len(self.files)} images in {split_dir}')
+        # 限制样本数量
+        if max_samples is not None and max_samples > 0:
+            self.files = self.files[:max_samples]
+            print(f'Limited to {len(self.files)} images in {split_dir}')
+        else:
+            print(f'Found {len(self.files)} images in {split_dir}')
 
     def __len__(self):
         return len(self.files)

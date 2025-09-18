@@ -57,6 +57,10 @@ def create_dataset(config, is_eval=False, logger=None):
         root = root if root else 'data/vehicle'
         dataset_trn = Vehicle(root, split='train', transform=transforms_trn)
         dataset_val = Vehicle(root, split='val', transform=transforms_val)
+    elif config.dataset.type == 'vehicle':
+        root = root if root else 'data/vehicle'
+        dataset_trn = Vehicle(root, split='train', transform=transforms_trn, max_samples=5000)
+        dataset_val = Vehicle(root, split='val', transform=transforms_val, max_samples=1000)
     else:
         raise ValueError('%s not supported...' % config.dataset.type)
 
