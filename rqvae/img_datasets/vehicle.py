@@ -3,13 +3,12 @@ import os
 from glob import glob
 from PIL import Image
 from torch.utils.data import Dataset
-import numpy as np
+import torch
 
 
 class Vehicle(Dataset):
     """
     Vehicle Dataset for image reconstruction tasks.
-    Simple version: loads all images as RGB without padding.
     """
 
     def __init__(self, root, split='train', transform=None):
@@ -19,8 +18,10 @@ class Vehicle(Dataset):
 
         split_dir = os.path.join(root, split)
 
-        # Get all files recursively (no extension filtering)
+        # Get all image files
         self.files = glob(os.path.join(split_dir, '**', '*.*'), recursive=True)
+        # Filter for common image extensions
+        self.files = [f for f in self.files if f.lower().endswith(('.jpg', '.jpeg', '.png'))]
         self.files.sort()
 
         if len(self.files) == 0:
@@ -34,12 +35,23 @@ class Vehicle(Dataset):
     def __getitem__(self, idx):
         img_path = self.files[idx]
 
-        # Load and convert to RGB
-        img = Image.open(img_path).convert('RGB')
+        # Load image
+        img = Image.open(img_path)
+        print(f"[DEBUG] Loaded: mode={img.mode}, size={img.size}, path={os.path.basename(img_path)}")
+
+        # Convert to RGB
+        img = img.convert('RGB')
+        print(f"[DEBUG] After convert: mode={img.mode}, size={img.size}")
 
         # Apply transforms
         if self.transform is not None:
             img = self.transform(img)
+
+            # Check tensor shape after transform
+            if isinstance(img, torch.Tensor):
+                print(f"[DEBUG] After transform: tensor shape={img.shape}, dtype={img.dtype}")
+            else:
+                print(f"[DEBUG] After transform: type={type(img)}")
 
         return img
 
