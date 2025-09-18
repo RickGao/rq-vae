@@ -33,7 +33,7 @@ arch:
     attn_resolutions: [ 46 ]
     dropout: 0.00
 
-  checkpointing: false
+  checkpointing: true
 
 
 
