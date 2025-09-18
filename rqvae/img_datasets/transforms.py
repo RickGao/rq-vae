@@ -57,7 +57,7 @@ def create_transforms(config, split='train', is_eval=False):
             transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
         ]
     elif 'vehicle' in config.transforms.type:
-        # Padding is already done in the Vehicle dataset class
+        # Images are already padded to 1280x736 in the dataset
 
         if split == 'train' and not is_eval:
             transforms_ = [
