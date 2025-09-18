@@ -22,6 +22,7 @@ from torchvision.datasets import ImageNet
 from .lsun import LSUNClass
 from .ffhq import FFHQ
 from .transforms import create_transforms
+from .vehicle import Vehicle
 
 SMOKE_TEST = bool(os.environ.get("SMOKE_TEST", 0))
 
@@ -52,6 +53,10 @@ def create_dataset(config, is_eval=False, logger=None):
         category_name = config.dataset.type.split('-')[-1]
         dataset_trn = LSUNClass(root, category_name=category_name, transform=transforms_trn)
         dataset_val = LSUNClass(root, category_name=category_name, transform=transforms_trn)
+    elif config.dataset.type == 'vehicle':
+        root = root if root else 'data/vehicle'
+        dataset_trn = Vehicle(root, split='train', transform=transforms_trn)
+        dataset_val = Vehicle(root, split='val', transform=transforms_val)
     else:
         raise ValueError('%s not supported...' % config.dataset.type)
 
