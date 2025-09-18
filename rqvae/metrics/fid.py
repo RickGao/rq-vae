@@ -173,7 +173,11 @@ def compute_statistics_dataset(dataset,
             xs_recon = torch.clamp(xs_recon * 0.5 + 0.5, 0, 1)
             act_recon = inception_model(xs_recon).cpu()
             acts_recon.append(act_recon)
-            save_image(xs_recon, f"recon_batch_{idx}.png")
+            
+            os.makedirs("recon_image", exist_ok=True)
+            for i in range(xs_recon.shape[0]):
+                save_image(xs_recon[i], f"recon_image/recon_batch{idx:04d}_img{i:03d}.png")
+
 
 
     sample_mean = sample_sum.item() / sample_size_sum
