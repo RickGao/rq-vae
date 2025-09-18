@@ -57,15 +57,20 @@ def create_transforms(config, split='train', is_eval=False):
             transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
         ]
     elif 'vehicle' in config.transforms.type:
+        pad_tuple = (0, 8, 0, 8)  # (left=0, top=8, right=0, bottom=8) 只加上下各 8 像素
+
         if split == 'train' and not is_eval:
             transforms_ = [
-                transforms.Pad((0, 0, 8, 8), fill=0),
+                transforms.Lambda(lambda im: im.convert('RGB')),
+                transforms.Pad(pad_tuple, fill=0),
+                transforms.RandomHorizontalFlip(p=0.5),
                 transforms.ToTensor(),
                 transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5]),
             ]
         else:
             transforms_ = [
-                transforms.Pad((0, 0, 8, 8), fill=0),
+                transforms.Lambda(lambda im: im.convert('RGB')),
+                transforms.Pad(pad_tuple, fill=0),
                 transforms.ToTensor(),
                 transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5]),
             ]
