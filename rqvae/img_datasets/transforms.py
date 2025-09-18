@@ -61,7 +61,7 @@ def create_transforms(config, split='train', is_eval=False):
 
         if split == 'train' and not is_eval:
             transforms_ = [
-                transforms.Lambda(lambda im: im.convert('RGB')),
+                # transforms.Lambda(lambda im: im.convert('RGB')),
                 transforms.Pad(pad_tuple, fill=0),
                 transforms.RandomHorizontalFlip(p=0.5),
                 transforms.ToTensor(),
@@ -69,7 +69,7 @@ def create_transforms(config, split='train', is_eval=False):
             ]
         else:
             transforms_ = [
-                transforms.Lambda(lambda im: im.convert('RGB')),
+                # transforms.Lambda(lambda im: im.convert('RGB')),
                 transforms.Pad(pad_tuple, fill=0),
                 transforms.ToTensor(),
                 transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5]),
