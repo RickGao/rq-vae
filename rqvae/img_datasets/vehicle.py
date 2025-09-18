@@ -39,11 +39,11 @@ class Vehicle(Dataset):
 
         with Image.open(img_path) as img:
             # Convert to RGB
-            print(f"Original mode: {img.mode}, size: {img.size}")
+            print(f"AOriginal mode: {img.mode}, size: {img.size}")
 
             img = img.convert('RGB')
 
-            print(f"Original mode: {img.mode}, size: {img.size}")
+            print(f"BOriginal mode: {img.mode}, size: {img.size}")
 
             # Pad to 1280x736 (add 8 pixels top and bottom)
             # Use ImageOps.expand which preserves RGB channels
