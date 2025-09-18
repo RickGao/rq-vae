@@ -5,6 +5,8 @@ from PIL import Image
 from torch.utils.data import Dataset
 import torch
 
+IMG_EXTS = ('.jpg', '.jpeg', '.JPG', '.JPEG', '.png', '.PNG')
+
 
 class Vehicle(Dataset):
     """
@@ -18,9 +20,7 @@ class Vehicle(Dataset):
 
         split_dir = os.path.join(root, split)
 
-        # Get all image files
         self.files = glob(os.path.join(split_dir, '**', '*.*'), recursive=True)
-        # Filter for common image extensions
         self.files = [f for f in self.files if f.lower().endswith(('.jpg', '.jpeg', '.png'))]
         self.files.sort()
 
@@ -35,25 +35,16 @@ class Vehicle(Dataset):
     def __getitem__(self, idx):
         img_path = self.files[idx]
 
-        # Load image
-        img = Image.open(img_path)
-        print(f"[DEBUG] Loaded: mode={img.mode}, size={img.size}, path={os.path.basename(img_path)}")
-
-        # Convert to RGB
-        img = img.convert('RGB')
-        print(f"[DEBUG] After convert: mode={img.mode}, size={img.size}")
+        # Load and convert to RGB
+        img = Image.open(img_path).convert('RGB')
 
         # Apply transforms
         if self.transform is not None:
             img = self.transform(img)
 
-            # Check tensor shape after transform
-            if isinstance(img, torch.Tensor):
-                print(f"[DEBUG] After transform: tensor shape={img.shape}, dtype={img.dtype}")
-            else:
-                print(f"[DEBUG] After transform: type={type(img)}")
-
-        return img
+        # Return tuple (image, dummy_label) to match other datasets
+        # The trainer expects inputs[0] to be the image
+        return (img, 0)  # 返回元组而不是单个图像
 
     def get_image_path(self, idx):
         return self.files[idx]

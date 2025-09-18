@@ -30,7 +30,7 @@ arch:
     ch_mult: [ 1, 1, 2, 2, 4, 4 ]
     num_res_blocks: 2
     # 736 → 368 → 184 → 92 → 46 → 23，可在较低分辨率开注意力
-    attn_resolutions: [ 46, 23 ]
+    attn_resolutions: [ 46 ]
     dropout: 0.00
 
   checkpointing: true
