@@ -57,21 +57,16 @@ def create_transforms(config, split='train', is_eval=False):
             transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
         ]
     elif 'vehicle' in config.transforms.type:
-        # Pad 1280x720 to 1280x736 (add 8 pixels top and bottom)
-        pad_tuple = (0, 8, 0, 8)  # (left=0, top=8, right=0, bottom=8)
+        # Padding is already done in the Vehicle dataset class
 
         if split == 'train' and not is_eval:
             transforms_ = [
-                transforms.Lambda(lambda img: img.convert('RGB')),  # Ensure RGB
-                transforms.Pad(pad_tuple, fill=0, padding_mode='constant'),
                 transforms.RandomHorizontalFlip(p=0.5),
                 transforms.ToTensor(),
                 transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5]),
             ]
         else:
             transforms_ = [
-                transforms.Lambda(lambda img: img.convert('RGB')),  # Ensure RGB
-                transforms.Pad(pad_tuple, fill=0, padding_mode='constant'),
                 transforms.ToTensor(),
                 transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5]),
             ]
