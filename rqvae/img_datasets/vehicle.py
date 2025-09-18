@@ -43,7 +43,7 @@ class Vehicle(Dataset):
 
             # Pad to 1280x736 (add 8 pixels top and bottom)
             # Use ImageOps.expand which preserves RGB channels
-            img = ImageOps.expand(img, border=(0, 8, 0, 8), fill=(0, 0, 0))
+            # img = ImageOps.expand(img, border=(0, 8, 0, 8), fill=(0, 0, 0))
 
         # Apply transforms
         if self.transform is not None:
