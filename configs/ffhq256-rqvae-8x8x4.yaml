@@ -1,7 +1,7 @@
 dataset:
-  type: ffhq
+  type: vehicle
   transforms:
-    type: ffhq256x256
+    type: vehicle
 
 arch:
   type: rq-vae
@@ -10,27 +10,66 @@ arch:
     bottleneck_type: rq
     embed_dim: 256
     n_embed: 2048
-    latent_shape: [ 8, 8, 256 ]
-    code_shape: [ 8, 8, 4 ]
+    latent_shape: [ 23, 40, 256 ]   # 736/32=23, 1280/32=40
+    code_shape:   [ 23, 40, 4 ]     # 与 latent 前两维整除匹配
     shared_codebook: true
     decay: 0.99
     restart_unused_codes: true
 
     loss_type: mse
     latent_loss_weight: 0.25
+
   ddconfig:
     double_z: false
     z_channels: 256
-    resolution: 256
+    resolution: 736                 # 用高度做基准，影响 attn 触发点的“标称分辨率”
     in_channels: 3
     out_ch: 3
     ch: 128
-    ch_mult: [ 1, 1, 2, 2, 4, 4]
+    # 下采样次数 = len(ch_mult) - 1，所以要 6 个元素 → 5 次下采样（1/32）
+    ch_mult: [ 1, 1, 2, 2, 4, 4 ]
     num_res_blocks: 2
-    attn_resolutions: [ 16 ]
+    # 736 → 368 → 184 → 92 → 46 → 23，可在较低分辨率开注意力
+    attn_resolutions: [ 46, 23 ]
     dropout: 0.00
+
   checkpointing: true
- 
+
+
+
+# dataset:
+#   type: vehicle
+#   transforms:
+#     type: vehicle
+#
+# arch:
+#   type: rq-vae
+#   code_hier: 1
+#   hparams:
+#     bottleneck_type: rq
+#     embed_dim: 256
+#     n_embed: 2048
+#     latent_shape: [ 8, 8, 256 ]
+#     code_shape: [ 8, 8, 4 ]
+#     shared_codebook: true
+#     decay: 0.99
+#     restart_unused_codes: true
+#
+#     loss_type: mse
+#     latent_loss_weight: 0.25
+#   ddconfig:
+#     double_z: false
+#     z_channels: 256
+#     resolution: 256
+#     in_channels: 3
+#     out_ch: 3
+#     ch: 128
+#     ch_mult: [ 1, 1, 2, 2, 4, 4]
+#     num_res_blocks: 2
+#     attn_resolutions: [ 16 ]
+#     dropout: 0.00
+#   checkpointing: true
+
 
 optimizer:
   # Original VQ-GAN: lr = 4.5e-06 * (batch size) -> 5.4e-5 for batch size 12
