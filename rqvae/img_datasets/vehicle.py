@@ -13,7 +13,7 @@ class Vehicle(Dataset):
     Vehicle Dataset for image reconstruction tasks.
     """
 
-    def __init__(self, root, split='train', transform=None, max_samples=None):
+    def __init__(self, root, split='train', transform=None, max_samples=5000):
         self.root = root
         self.split = split
         self.transform = transform
