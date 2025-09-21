@@ -61,14 +61,12 @@ def create_transforms(config, split='train', is_eval=False):
 
         if split == 'train' and not is_eval:
             transforms_ = [
-                transforms.Pad((0, 8, 0, 8), fill=0, padding_mode='constant'),  # (left, top, right, bottom)
                 transforms.RandomHorizontalFlip(p=0.5),
                 transforms.ToTensor(),
                 transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5]),
             ]
         else:
             transforms_ = [
-                transforms.Pad((0, 8, 0, 8), fill=0, padding_mode='constant'),
                 transforms.ToTensor(),
                 transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5]),
             ]
