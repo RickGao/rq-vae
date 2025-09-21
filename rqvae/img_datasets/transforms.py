@@ -57,8 +57,6 @@ def create_transforms(config, split='train', is_eval=False):
             transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
         ]
     elif 'vehicle' in config.transforms.type:
-        # Pad from 1280x720 to 1280x736 (add 8 pixels top and bottom)
-
         if split == 'train' and not is_eval:
             transforms_ = [
                 transforms.RandomHorizontalFlip(p=0.5),

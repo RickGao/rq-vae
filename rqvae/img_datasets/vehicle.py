@@ -27,7 +27,7 @@ class Vehicle(Dataset):
         if len(self.files) == 0:
             raise RuntimeError(f'No images found in {split_dir}')
 
-        # 限制样本数量
+        # Limit Samples
         if max_samples is not None and max_samples > 0:
             self.files = self.files[:max_samples]
             print(f'Limited to {len(self.files)} images in {split_dir}')
@@ -49,7 +49,7 @@ class Vehicle(Dataset):
 
         # Return tuple (image, dummy_label) to match other datasets
         # The trainer expects inputs[0] to be the image
-        return (img, 0)  # 返回元组而不是单个图像
+        return (img, 0)
 
     def get_image_path(self, idx):
         return self.files[idx]
