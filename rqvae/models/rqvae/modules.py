@@ -4,7 +4,7 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
-from .layers import (AttnBlock, Downsample, Normalize, ResnetBlock, Upsample, nonlinearity)
+from .layers import (AttnBlock, Downsample, DownsampleH3W4, Normalize, ResnetBlock, Upsample, UpsampleH3W4, nonlinearity)
 
 
 class Encoder(nn.Module):
@@ -26,7 +26,7 @@ class Encoder(nn.Module):
                                        stride=1,
                                        padding=1)
 
-        curr_res = resolution
+        curr_res = resolution # Height
         in_ch_mult = (1,)+tuple(ch_mult)
         self.down = nn.ModuleList()
         for i_level in range(self.num_resolutions):
@@ -45,7 +45,10 @@ class Encoder(nn.Module):
             down = nn.Module()
             down.block = block
             down.attn = attn
-            if i_level != self.num_resolutions-1:
+            if i_level == 0:
+                down.downsample = DownsampleH3W4(block_in, resamp_with_conv)
+                curr_res = curr_res // 3
+            elif 0 < i_level < self.num_resolutions-1:
                 down.downsample = Downsample(block_in, resamp_with_conv)
                 curr_res = curr_res // 2
             self.down.append(down)
@@ -155,7 +158,10 @@ class Decoder(nn.Module):
             up = nn.Module()
             up.block = block
             up.attn = attn
-            if i_level != 0:
+            if i_level == 1:
+                up.upsample = UpsampleH3W4(block_in, resamp_with_conv)
+                curr_res = curr_res * 3
+            elif i_level > 1:
                 up.upsample = Upsample(block_in, resamp_with_conv)
                 curr_res = curr_res * 2
             self.up.insert(0, up) # prepend to get consistent order
