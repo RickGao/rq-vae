@@ -28,7 +28,7 @@ arch:
     ch: 128
     ch_mult: [ 1, 1, 2, 2, 4, 4 ]
     num_res_blocks: 2
-    attn_resolutions: [ 40 ]
+    attn_resolutions: [ 80 ]
     dropout: 0.00
 
   checkpointing: true
