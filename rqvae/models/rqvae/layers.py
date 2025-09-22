@@ -89,7 +89,7 @@ class DownsamplePad(nn.Module):
 
     def forward(self, x):
         if self.with_conv:
-            pad = (0,0,8,8)
+            pad = (0,1,8,9)
             x = torch.nn.functional.pad(x, pad, mode="reflect")
             x = self.conv(x)
         else:
