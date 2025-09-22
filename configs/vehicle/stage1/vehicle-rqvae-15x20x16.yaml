@@ -10,8 +10,8 @@ arch:
     bottleneck_type: rq
     embed_dim: 256
     n_embed: 16384
-    latent_shape: [ 15, 20, 256 ]
-    code_shape:   [ 15, 20, 16 ]
+    latent_shape: [ 23, 40, 256 ]
+    code_shape:   [ 23, 40, 16 ]
     shared_codebook: true
     decay: 0.99
     restart_unused_codes: true
@@ -22,13 +22,13 @@ arch:
   ddconfig:
     double_z: false
     z_channels: 256
-    resolution: 720
+    resolution: 1280
     in_channels: 3
     out_ch: 3
     ch: 128
     ch_mult: [ 1, 1, 2, 2, 4, 4 ]
     num_res_blocks: 2
-    attn_resolutions: [ 15 ]
+    attn_resolutions: [ 40 ]
     dropout: 0.00
 
   checkpointing: true
