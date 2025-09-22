@@ -1,10 +1,13 @@
 """borrowed and modified from https://github.com/CompVis/taming-transformers"""
+import math
+
 import numpy as np
 import torch
+from sympy import ceiling
 from torch import nn
 from torch.nn import functional as F
 
-from .layers import (AttnBlock, Downsample, DownsampleH3W4, Normalize, ResnetBlock, Upsample, UpsampleH3W4, nonlinearity)
+from .layers import (AttnBlock, Downsample, DownsamplePad, Normalize, ResnetBlock, Upsample, UpsamplePad, nonlinearity)
 
 
 class Encoder(nn.Module):
@@ -26,7 +29,7 @@ class Encoder(nn.Module):
                                        stride=1,
                                        padding=1)
 
-        curr_res = resolution # Height
+        curr_res = resolution # Width
         in_ch_mult = (1,)+tuple(ch_mult)
         self.down = nn.ModuleList()
         for i_level in range(self.num_resolutions):
@@ -46,8 +49,8 @@ class Encoder(nn.Module):
             down.block = block
             down.attn = attn
             if i_level == 0:
-                down.downsample = DownsampleH3W4(block_in, resamp_with_conv)
-                curr_res = curr_res // 3
+                down.downsample = DownsamplePad(block_in, resamp_with_conv)
+                curr_res = curr_res // 2
             elif 0 < i_level < self.num_resolutions-1:
                 down.downsample = Downsample(block_in, resamp_with_conv)
                 curr_res = curr_res // 2
@@ -117,8 +120,8 @@ class Decoder(nn.Module):
         # compute in_ch_mult, block_in and curr_res at lowest res
         in_ch_mult = (1,)+tuple(ch_mult)
         block_in = ch*ch_mult[self.num_resolutions-1]
-        curr_res = resolution // (2**(self.num_resolutions-2) * 3)
-        self.z_shape = (1, z_channels, curr_res, curr_res // 3 * 4)
+        curr_res = resolution // (2**(self.num_resolutions-1))
+        self.z_shape = (1, z_channels, math.ceil(curr_res * 9 / 16), curr_res)
         print("Working with z of shape {} = {} dimensions.".format(
             self.z_shape, np.prod(self.z_shape)))
 
@@ -159,8 +162,8 @@ class Decoder(nn.Module):
             up.block = block
             up.attn = attn
             if i_level == 1:
-                up.upsample = UpsampleH3W4(block_in, resamp_with_conv)
-                curr_res = curr_res * 3
+                up.upsample = UpsamplePad(block_in, resamp_with_conv)
+                curr_res = curr_res * 2
             elif i_level > 1:
                 up.upsample = Upsample(block_in, resamp_with_conv)
                 curr_res = curr_res * 2

@@ -34,22 +34,40 @@ class Upsample(nn.Module):
             x = self.conv(x)
         return x
 
-class UpsampleH3W4(nn.Module):
+class UpsamplePad(nn.Module):
     def __init__(self, in_channels, with_conv):
         super().__init__()
         self.with_conv = with_conv
         if self.with_conv:
             self.conv = torch.nn.Conv2d(in_channels,
                                         in_channels,
-                                        kernel_size=5,
+                                        kernel_size=3,
                                         stride=1,
-                                        padding=2)
+                                        padding=1)
 
     def forward(self, x):
-        x = torch.nn.functional.interpolate(x, scale_factor=(3.0, 4.0), mode="bilinear", align_corners=False)
+        x = torch.nn.functional.interpolate(x, scale_factor=2.0, mode="nearest")
         if self.with_conv:
             x = self.conv(x)
+        x = x[:, :, 8:-8, :]
         return x
+
+# class UpsampleH3W4(nn.Module):
+#     def __init__(self, in_channels, with_conv):
+#         super().__init__()
+#         self.with_conv = with_conv
+#         if self.with_conv:
+#             self.conv = torch.nn.Conv2d(in_channels,
+#                                         in_channels,
+#                                         kernel_size=5,
+#                                         stride=1,
+#                                         padding=2)
+#
+#     def forward(self, x):
+#         x = torch.nn.functional.interpolate(x, scale_factor=(3.0, 4.0), mode="bilinear", align_corners=False)
+#         if self.with_conv:
+#             x = self.conv(x)
+#         return x
 
 
 class Downsample(nn.Module):
@@ -73,7 +91,8 @@ class Downsample(nn.Module):
             x = torch.nn.functional.avg_pool2d(x, kernel_size=2, stride=2)
         return x
 
-class DownsampleH3W4(nn.Module):
+
+class DownsamplePad(nn.Module):
     def __init__(self, in_channels, with_conv):
         super().__init__()
         self.with_conv = with_conv
@@ -81,18 +100,40 @@ class DownsampleH3W4(nn.Module):
             # no asymmetric padding in torch conv, must do it ourselves
             self.conv = torch.nn.Conv2d(in_channels,
                                         in_channels,
-                                        kernel_size=(4, 5),
-                                        stride=(3, 4),
+                                        kernel_size=3,
+                                        stride=2,
                                         padding=0)
 
     def forward(self, x):
         if self.with_conv:
-            pad = (0,1,0,1)
-            x = torch.nn.functional.pad(x, pad, mode="constant", value=0)
+            pad = (0,0,8,8)
+            x = torch.nn.functional.pad(x, pad, mode="reflect")
             x = self.conv(x)
         else:
-            x = torch.nn.functional.avg_pool2d(x, kernel_size=(3, 4), stride=(3, 4))
+            x = torch.nn.functional.avg_pool2d(x, kernel_size=2, stride=2)
         return x
+
+
+# class DownsampleH3W4(nn.Module):
+#     def __init__(self, in_channels, with_conv):
+#         super().__init__()
+#         self.with_conv = with_conv
+#         if self.with_conv:
+#             # no asymmetric padding in torch conv, must do it ourselves
+#             self.conv = torch.nn.Conv2d(in_channels,
+#                                         in_channels,
+#                                         kernel_size=(4, 5),
+#                                         stride=(3, 4),
+#                                         padding=0)
+#
+#     def forward(self, x):
+#         if self.with_conv:
+#             pad = (0,1,0,1)
+#             x = torch.nn.functional.pad(x, pad, mode="constant", value=0)
+#             x = self.conv(x)
+#         else:
+#             x = torch.nn.functional.avg_pool2d(x, kernel_size=2, stride=(3, 4))
+#         return x
 
 
 class ResnetBlock(nn.Module):
