@@ -9,7 +9,7 @@ arch:
   hparams:
     bottleneck_type: rq
     embed_dim: 256
-    n_embed: 16384
+    n_embed: 4096
     latent_shape: [ 23, 40, 256 ]
     code_shape:   [ 23, 40, 8 ]
     shared_codebook: true
