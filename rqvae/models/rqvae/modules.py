@@ -161,10 +161,10 @@ class Decoder(nn.Module):
             up = nn.Module()
             up.block = block
             up.attn = attn
-            if i_level == 3:
+            if i_level == self.num_resolutions - 1:
                 up.upsample = UpsamplePad(block_in, resamp_with_conv)
                 curr_res = curr_res * 2
-            elif 3 > i_level > 0:
+            elif self.num_resolutions - 1 > i_level > 0:
                 up.upsample = Upsample(block_in, resamp_with_conv)
                 curr_res = curr_res * 2
             self.up.insert(0, up) # prepend to get consistent order
