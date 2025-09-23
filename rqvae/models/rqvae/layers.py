@@ -49,7 +49,7 @@ class UpsamplePad(nn.Module):
         x = torch.nn.functional.interpolate(x, scale_factor=2.0, mode="nearest")
         if self.with_conv:
             x = self.conv(x)
-        x = x[:, :, 8:-8, :]
+        x = x[:, :, :-1, :]
         return x
 
 
@@ -89,8 +89,8 @@ class DownsamplePad(nn.Module):
 
     def forward(self, x):
         if self.with_conv:
-            pad = (0,1,8,9)
-            x = torch.nn.functional.pad(x, pad, mode="reflect")
+            pad = (0,1,1,1)
+            x = torch.nn.functional.pad(x, pad, mode="constant", value=0)
             x = self.conv(x)
         else:
             x = torch.nn.functional.avg_pool2d(x, kernel_size=2, stride=2)

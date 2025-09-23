@@ -48,10 +48,10 @@ class Encoder(nn.Module):
             down = nn.Module()
             down.block = block
             down.attn = attn
-            if i_level == 0:
+            if i_level == self.num_resolutions-2:
                 down.downsample = DownsamplePad(block_in, resamp_with_conv)
                 curr_res = curr_res // 2
-            elif 0 < i_level < self.num_resolutions-1:
+            elif i_level < self.num_resolutions-2:
                 down.downsample = Downsample(block_in, resamp_with_conv)
                 curr_res = curr_res // 2
             self.down.append(down)
@@ -161,10 +161,10 @@ class Decoder(nn.Module):
             up = nn.Module()
             up.block = block
             up.attn = attn
-            if i_level == 1:
+            if i_level == 3:
                 up.upsample = UpsamplePad(block_in, resamp_with_conv)
                 curr_res = curr_res * 2
-            elif i_level > 1:
+            elif 3 > i_level > 0:
                 up.upsample = Upsample(block_in, resamp_with_conv)
                 curr_res = curr_res * 2
             self.up.insert(0, up) # prepend to get consistent order
