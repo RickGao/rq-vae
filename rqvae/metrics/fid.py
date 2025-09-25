@@ -288,7 +288,7 @@ def compute_rfid(dataset,
                                    batch_size=batch_size,
                                    device=device,
                                    skip_original=False,
-                                   result_path=image_path
+                                   image_path=image_path
                                    )
     rfid = frechet_distance(mu_orig, sigma_orig, mu_recon, sigma_recon)
     return rfid
