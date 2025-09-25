@@ -147,6 +147,8 @@ def compute_statistics_dataset(dataset,
     sample_max = torch.tensor(float('-inf'), device=device)
     sample_min = torch.tensor(float('inf'), device=device)
 
+    print("Images saved to", image_path)
+
     # for xs, _ in tqdm(loader, desc="compute acts"):
     for idx, (xs, _) in enumerate(tqdm(loader, desc="compute acts")):
         xs = xs.to(device, non_blocking=True)
@@ -175,7 +177,6 @@ def compute_statistics_dataset(dataset,
             acts_recon.append(act_recon)
 
             os.makedirs(image_path, exist_ok=True)
-            print("Images saved to", image_path)
             for i in range(xs_recon.shape[0]):
                 save_image(xs_recon[i], f"{image_path}/recon_batch{idx:04d}_img{i:03d}.png")
 
