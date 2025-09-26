@@ -105,12 +105,7 @@ if __name__ == '__main__':
     logger.info(f'rFID:  {results["rfid"]:.4f}')
     logger.info(f'SSIM:  {results["ssim_mean"]:.4f} ± {results["ssim_std"]:.4f}')
     logger.info(f'PSNR:  {results["psnr_mean"]:.2f} ± {results["psnr_std"]:.2f} dB')
-
-    if 'lpips_mean' in results:
-        logger.info(f'LPIPS: {results["lpips_mean"]:.4f} ± {results["lpips_std"]:.4f}')
-    else:
-        logger.info('LPIPS: Not available (install with: pip install lpips)')
-
+    logger.info(f'LPIPS: {results["lpips_mean"]:.4f} ± {results["lpips_std"]:.4f}')
     logger.info('=' * 60)
     logger.info(f'Log saved to: {os.path.join(image_path, "metrics.log")}')
     if not args.no_save_images:
