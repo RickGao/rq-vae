@@ -78,5 +78,8 @@ if __name__ == '__main__':
     dataset = dataset_val if args.split in ['val', 'valid'] else dataset_trn
     logger.info(f'measuring rFID on {config.dataset.type}/{args.split}')
 
-    rfid = compute_rfid(dataset, vqvae_model, batch_size=args.batch_size, device=device)
+    model_name = os.path.splitext(os.path.basename(args.vqvae))[0]  # get "epochxxx_model"
+    image_path = os.path.join(os.path.dirname(args.vqvae), model_name)
+
+    rfid = compute_rfid(dataset, vqvae_model, batch_size=args.batch_size, device=device, image_path=image_path)
     logger.info(f'rFID: {rfid:.4f}')

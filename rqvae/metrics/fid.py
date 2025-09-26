@@ -123,7 +123,7 @@ def compute_statistics_dataset(dataset,
                                stage1_model=None,
                                device=torch.device('cuda'),
                                skip_original=False,
-                               save_dir=None,
+                               image_path="recon_image",
                                ):
 
     if skip_original and stage1_model is None:
@@ -146,6 +146,8 @@ def compute_statistics_dataset(dataset,
     sample_sq_sum = torch.tensor(0.0, device=device)
     sample_max = torch.tensor(float('-inf'), device=device)
     sample_min = torch.tensor(float('inf'), device=device)
+
+    print("Images saved to", image_path)
 
     # for xs, _ in tqdm(loader, desc="compute acts"):
     for idx, (xs, _) in enumerate(tqdm(loader, desc="compute acts")):
@@ -174,9 +176,9 @@ def compute_statistics_dataset(dataset,
             act_recon = inception_model(xs_recon).cpu()
             acts_recon.append(act_recon)
 
-            os.makedirs("recon_image", exist_ok=True)
+            os.makedirs(image_path, exist_ok=True)
             for i in range(xs_recon.shape[0]):
-                save_image(xs_recon[i], f"recon_image/recon_batch{idx:04d}_img{i:03d}.png")
+                save_image(xs_recon[i], f"{image_path}/recon_batch{idx:04d}_img{i:03d}.png")
 
 
 
@@ -279,6 +281,7 @@ def compute_rfid(dataset,
                  stage1_model,
                  batch_size=500,
                  device=torch.device('cuda'),
+                 image_path="recon_image",
                  ):
     mu_orig, sigma_orig, mu_recon, sigma_recon = \
         compute_statistics_dataset(dataset,
@@ -286,6 +289,7 @@ def compute_rfid(dataset,
                                    batch_size=batch_size,
                                    device=device,
                                    skip_original=False,
+                                   image_path=image_path
                                    )
     rfid = frechet_distance(mu_orig, sigma_orig, mu_recon, sigma_recon)
     return rfid

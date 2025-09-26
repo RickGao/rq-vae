@@ -11,7 +11,7 @@ arch:
     embed_dim: 256
     n_embed: 2048
     latent_shape: [ 23, 40, 256 ]
-    code_shape:   [ 23, 40, 4 ]
+    code_shape:   [ 23, 40, 1 ]
     shared_codebook: true
     decay: 0.99
     restart_unused_codes: true
