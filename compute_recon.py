@@ -16,14 +16,18 @@ def load_model(path, ema=False):
     config.arch = augment_arch_defaults(config.arch)
 
     model, _ = create_model(config.arch, ema=False)
-    ckpt = torch.load(path, weights_only=False)['state_dict_ema'] if ema else torch.load(path, weights_only=False)['state_dict']
+    ckpt = torch.load(path, weights_only=False)['state_dict_ema'] if ema else torch.load(path, weights_only=False)[
+        'state_dict']
     model.load_state_dict(ckpt)
 
     return model, config
 
 
 def setup_logger(result_path):
-    log_fname = os.path.join(result_path, 'recon_metrics.log')
+    # Ensure directory exists before creating log file
+    os.makedirs(result_path, exist_ok=True)
+
+    log_fname = os.path.join(result_path, 'metrics.log')
     logging.basicConfig(
         format="%(asctime)s - %(levelname)s - %(name)s -   %(message)s",
         datefmt="%m/%d/%Y %H:%M:%S",
@@ -39,13 +43,13 @@ def setup_logger(result_path):
 if __name__ == '__main__':
     """
     Computes reconstruction metrics: rFID, SSIM, PSNR, LPIPS
-    
+
     - rFID: FID between val images and reconstructed images
     - SSIM: Structural Similarity Index (higher is better, max=1.0)
     - PSNR: Peak Signal-to-Noise Ratio in dB (higher is better)
     - LPIPS: Learned Perceptual Image Patch Similarity (lower is better)
-    
-    Log is saved to `recon_metrics.log` in the image_path directory.
+
+    Log is saved to `metrics.log` in the image_path directory.
     Reconstructed images are saved in the same directory.
     """
     parser = ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
@@ -70,7 +74,7 @@ if __name__ == '__main__':
     # Setup image path and logger
     model_name = os.path.splitext(os.path.basename(args.vqvae))[0]  # get "epochxxx_model"
     image_path = os.path.join(os.path.dirname(args.vqvae), model_name)
-    
+
     logger = setup_logger(image_path)
     logger.info(f'vqvae model loaded from {args.vqvae}')
 
@@ -81,10 +85,10 @@ if __name__ == '__main__':
     logger.info(f'dataset size: {len(dataset)} samples')
 
     # Compute all reconstruction metrics
-    logger.info('='*60)
+    logger.info('=' * 60)
     logger.info('Computing reconstruction metrics...')
-    logger.info('='*60)
-    
+    logger.info('=' * 60)
+
     results = compute_reconstruction_metrics(
         dataset,
         batch_size=args.batch_size,
@@ -95,19 +99,19 @@ if __name__ == '__main__':
     )
 
     # Log results
-    logger.info('='*60)
+    logger.info('=' * 60)
     logger.info('RECONSTRUCTION METRICS SUMMARY')
-    logger.info('='*60)
+    logger.info('=' * 60)
     logger.info(f'rFID:  {results["rfid"]:.4f}')
     logger.info(f'SSIM:  {results["ssim_mean"]:.4f} ± {results["ssim_std"]:.4f}')
     logger.info(f'PSNR:  {results["psnr_mean"]:.2f} ± {results["psnr_std"]:.2f} dB')
-    
+
     if 'lpips_mean' in results:
         logger.info(f'LPIPS: {results["lpips_mean"]:.4f} ± {results["lpips_std"]:.4f}')
     else:
         logger.info('LPIPS: Not available (install with: pip install lpips)')
-    
-    logger.info('='*60)
-    logger.info(f'Log saved to: {os.path.join(image_path, "recon_metrics.log")}')
+
+    logger.info('=' * 60)
+    logger.info(f'Log saved to: {os.path.join(image_path, "metrics.log")}')
     if not args.no_save_images:
         logger.info(f'Images saved to: {image_path}')
