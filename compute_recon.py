@@ -55,8 +55,6 @@ if __name__ == '__main__':
                         help='Dataset split to evaluate (val or train)')
     parser.add_argument('--vqvae', type=str, default='', required=True,
                         help='vqvae path for reconstruction metrics')
-    # parser.add_argument('--ema', action='store_true',
-    #                     help='Use EMA weights if available')
     parser.add_argument('--no-save-images', action='store_true',
                         help='Do not save reconstructed images')
 
@@ -65,7 +63,7 @@ if __name__ == '__main__':
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
     # Load model
-    vqvae_model, config = load_model(args.vqvae, ema=args.ema)
+    vqvae_model, config = load_model(args.vqvae)
     vqvae_model = vqvae_model.to(device)
     vqvae_model = torch.nn.DataParallel(vqvae_model).eval()
 
@@ -75,8 +73,6 @@ if __name__ == '__main__':
     
     logger = setup_logger(image_path)
     logger.info(f'vqvae model loaded from {args.vqvae}')
-    # if args.ema:
-    #     logger.info('Using EMA weights')
 
     # Load dataset
     dataset_trn, dataset_val = create_dataset(config, is_eval=True, logger=logger)
