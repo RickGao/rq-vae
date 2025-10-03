@@ -274,6 +274,16 @@ class RQBottleneck(nn.Module):
         x_reshaped = self.to_code_shape(x)
         quant_list, codes = self.quantize(x_reshaped)
 
+        # ========== 保存每张图片的codes ==========
+        import os
+        os.makedirs('code', exist_ok=True)
+
+        codes_numpy = codes.cpu().numpy()
+        for i in range(codes_numpy.shape[0]):
+            code_flat = codes_numpy[i].reshape(-1)
+            np.savetxt(f'code/code_{i}.txt', code_flat, fmt='%d')
+        # =========================================
+
         commitment_loss = self.compute_commitment_loss(x_reshaped, quant_list)
         quants_trunc = self.to_latent_shape(quant_list[-1])
         quants_trunc = x + (quants_trunc - x).detach()
