@@ -19,6 +19,7 @@ import torch
 import torch.distributed as dist
 from torch import nn
 from torch.nn import functional as F
+import os
 
 
 class VQEmbedding(nn.Embedding):
@@ -274,15 +275,25 @@ class RQBottleneck(nn.Module):
         x_reshaped = self.to_code_shape(x)
         quant_list, codes = self.quantize(x_reshaped)
 
-        # ========== 保存每张图片的codes ==========
+
+        # ========== Save codes ==========
         import os
         os.makedirs('code', exist_ok=True)
 
         codes_numpy = codes.cpu().numpy()
-        for i in range(codes_numpy.shape[0]):
-            code_flat = codes_numpy[i].reshape(-1)
-            np.savetxt(f'code/code_{i}.txt', code_flat, fmt='%d')
+
+        with open('code/codes.txt', 'a') as f:
+            for i in range(codes_numpy.shape[0]):
+                code_flat = codes_numpy[i].reshape(-1)
+                # A line for each image, seperated with blank
+                f.write(' '.join(map(str, code_flat.astype(int))) + '\n')
         # =========================================
+
+        commitment_loss = self.compute_commitment_loss(x_reshaped, quant_list)
+        quants_trunc = self.to_latent_shape(quant_list[-1])
+        quants_trunc = x + (quants_trunc - x).detach()
+
+        return quants_trunc, commitment_loss, codes
 
         commitment_loss = self.compute_commitment_loss(x_reshaped, quant_list)
         quants_trunc = self.to_latent_shape(quant_list[-1])
