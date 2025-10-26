@@ -16,4 +16,5 @@ datadings
 pycocotools
 numpy==1.23.5
 protobuf>=3.19,<3.21
+lpips
 git+https://github.com/openai/CLIP.git
