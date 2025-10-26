@@ -295,11 +295,6 @@ class RQBottleneck(nn.Module):
 
         return quants_trunc, commitment_loss, codes
 
-        commitment_loss = self.compute_commitment_loss(x_reshaped, quant_list)
-        quants_trunc = self.to_latent_shape(quant_list[-1])
-        quants_trunc = x + (quants_trunc - x).detach()
-
-        return quants_trunc, commitment_loss, codes
     
     def compute_commitment_loss(self, x, quant_list):
         r"""
